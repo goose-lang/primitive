@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  merge_group:
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        go-version: ["stable"]
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+      - name: Check style
+        run: |
+          gofmt -w -s .
+          git diff --exit-code
+      - name: Test
+        run: |
+          go vet ./...
+          go test -v ./...
