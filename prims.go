@@ -12,32 +12,32 @@ import (
 	"time"
 )
 
-// UInt64Get converts the first 8 bytes of p to a uint64.
+// UInt64Get converts the first 8 bytes of p (in little-endian order) to a
+// uint64.
 //
 // Requires p be at least 8 bytes long.
-//
-// Happens to decode in little-endian byte order, but this is only relevant as
-// far as the relationship between UInt64Get and UInt64Encode.
 func UInt64Get(p []byte) uint64 {
 	return binary.LittleEndian.Uint64(p)
 }
 
-// 32-bit version
+// UInt32Get converts the first 4 bytes of p (in little endian order) to a
+// uint32.
+//
+// Requires p be at least 4 bytes long.
 func UInt32Get(p []byte) uint32 {
 	return binary.LittleEndian.Uint32(p)
 }
 
-// UInt64Put stores n to the first 8 bytes of p
+// UInt64Put stores n to the first 8 bytes of p in little-endian order.
 //
 // Requires p to be at least 8 bytes long.
-//
-// Uses little-endian byte order, but this is only relevant in that it's the
-// inverse of UInt64Get.
 func UInt64Put(p []byte, n uint64) {
 	binary.LittleEndian.PutUint64(p, n)
 }
 
-// 32-bit version
+// UInt32Put stores n to the first 4 bytes of p in little-endian order.
+//
+// Requires p to be at least 4 bytes long.
 func UInt32Put(p []byte, n uint32) {
 	binary.LittleEndian.PutUint32(p, n)
 }
@@ -62,13 +62,9 @@ func UInt64ToString(x uint64) string {
 func Linearize() {}
 
 // Assume lets the proof assume that `c` is true.
-// *Use with care*, assumptions are trusted and should be justified!
-// Note that these are *runtime-checked* assumptions, i.e., the worst-case here
-// is having the program panic in unexpected ways.
 //
-// The Go implementation will panic (quit the process in a controlled manner) if
-// `c` is not true. (Not to be confused with GooseLang `Panic` which is UB.)
-// In GooseLang, it will loop infinitely.
+// In Go, if the assumption is violated this function will panic, whereas in the
+// GooseLang model it will loop infinitely.
 func Assume(c bool) {
 	if !c {
 		panic("Assume condition violated")
@@ -79,19 +75,24 @@ func Assume(c bool) {
 //
 // The Go implementation will panic (quit the process in a controlled manner) if
 // `c` is not true. In GooseLang, it will make the machine stuck, i.e., cause UB.
+//
+// Using `panic()` directly is preferred (which is also modeled as the machine
+// getting stuck), unless the extra control flow is unsupported.
 func Assert(c bool) {
 	if !c {
 		panic("Assert condition violated")
 	}
 }
 
-// Stop the program with the given exit code.
+// Exit terminates the program with the given exit code.
+//
+// Modeled as an infinite loop since no more steps will be taken.
 func Exit(n uint64) {
 	os.Exit(int(n))
 }
 
-// WaitTimeout is like cond.Wait(),
-// but waits for a maximum time of timeoutMs milliseconds.
+// WaitTimeout is like cond.Wait(), but waits for a maximum time of timeoutMs
+// milliseconds.
 //
 // Not provided by sync.Cond, so we have to (inefficiently) implement this
 // ourselves.
@@ -114,14 +115,19 @@ func WaitTimeout(cond *sync.Cond, timeoutMs uint64) {
 	}
 }
 
+// TimeNow returns the current time in nanoseconds.
 func TimeNow() uint64 {
 	return uint64(time.Now().UnixNano())
 }
 
+// Sleep waits for ns nanoseconds.
+//
+// Modeled as a no-op.
 func Sleep(ns uint64) {
 	time.Sleep(time.Duration(ns) * time.Nanosecond)
 }
 
+// MapClear deletes all values from the map m.
 func MapClear[M ~map[K]V, K comparable, V any](m M) {
 	for k := range m {
 		delete(m, k)
