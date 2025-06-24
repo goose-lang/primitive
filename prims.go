@@ -126,3 +126,9 @@ func TimeNow() uint64 {
 func Sleep(ns uint64) {
 	time.Sleep(time.Duration(ns) * time.Nanosecond)
 }
+
+// AssumeNoStringOverflow is modeled as an assumption that the length of `s` is
+// less than 2^64.
+//
+// This is an invariant of the Go runtime so we do nothing here.
+func AssumeNoStringOverflow(s string) {}
