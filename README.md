@@ -7,4 +7,4 @@ Primitive functionality provided by
 trusted model of its execution.
 
 For common functionality that is verified rather than trusted, use
-[goose-lang/std](https://github.com/goose-lang/goose).
+[goose-lang/std](https://github.com/goose-lang/std).
