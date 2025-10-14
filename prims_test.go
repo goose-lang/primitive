@@ -81,3 +81,9 @@ func TestWaitTimeout(t *testing.T) {
 	WaitTimeout(c, 10)
 	m.Unlock()
 }
+
+func TestMutex(t *testing.T) {
+	var m Mutex
+	m.Lock()
+	defer m.Unlock()
+}

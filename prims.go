@@ -132,3 +132,22 @@ func Sleep(ns uint64) {
 //
 // This is an invariant of the Go runtime so we do nothing here.
 func AssumeNoStringOverflow(s string) {}
+
+// Mutex is a wrapper around sync.Mutex.
+//
+// This exists primarily to allow the channel model to be used to bootstrap
+// goose: to avoid a circular dependency, the model's dependencies cannot use
+// channels, so it's easiest if primitive provides locks rather than using sync.
+type Mutex struct {
+	m sync.Mutex
+}
+
+// Lock locks m
+func (m *Mutex) Lock() {
+	m.m.Lock()
+}
+
+// Unlock unlocks m (which should be held)
+func (m *Mutex) Unlock() {
+	m.m.Unlock()
+}
