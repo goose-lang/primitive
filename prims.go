@@ -91,30 +91,6 @@ func Exit(n uint64) {
 	os.Exit(int(n))
 }
 
-// WaitTimeout is like cond.Wait(), but waits for a maximum time of timeoutMs
-// milliseconds.
-//
-// Not provided by sync.Cond, so we have to (inefficiently) implement this
-// ourselves.
-func WaitTimeout(cond *sync.Cond, timeoutMs uint64) {
-	done := make(chan struct{})
-	go func() {
-		cond.Wait()
-		cond.L.Unlock()
-		close(done)
-	}()
-	select {
-	case <-time.After(time.Duration(timeoutMs) * time.Millisecond):
-		// timed out
-		cond.L.Lock()
-		return
-	case <-done:
-		// Wait returned
-		cond.L.Lock()
-		return
-	}
-}
-
 // TimeNow returns the current time in nanoseconds.
 func TimeNow() uint64 {
 	return uint64(time.Now().UnixNano())
