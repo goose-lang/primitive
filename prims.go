@@ -4,43 +4,12 @@
 package primitive
 
 import (
-	"encoding/binary"
 	"fmt"
 	"math/rand"
 	"os"
 	"sync"
 	"time"
 )
-
-// UInt64Get converts the first 8 bytes of p (in little-endian order) to a
-// uint64.
-//
-// Requires p be at least 8 bytes long.
-func UInt64Get(p []byte) uint64 {
-	return binary.LittleEndian.Uint64(p)
-}
-
-// UInt32Get converts the first 4 bytes of p (in little endian order) to a
-// uint32.
-//
-// Requires p be at least 4 bytes long.
-func UInt32Get(p []byte) uint32 {
-	return binary.LittleEndian.Uint32(p)
-}
-
-// UInt64Put stores n to the first 8 bytes of p in little-endian order.
-//
-// Requires p to be at least 8 bytes long.
-func UInt64Put(p []byte, n uint64) {
-	binary.LittleEndian.PutUint64(p, n)
-}
-
-// UInt32Put stores n to the first 4 bytes of p in little-endian order.
-//
-// Requires p to be at least 4 bytes long.
-func UInt32Put(p []byte, n uint32) {
-	binary.LittleEndian.PutUint32(p, n)
-}
 
 // RandomUint64 returns a random uint64 using the global seed.
 func RandomUint64() uint64 {
@@ -102,12 +71,6 @@ func TimeNow() uint64 {
 func Sleep(ns uint64) {
 	time.Sleep(time.Duration(ns) * time.Nanosecond)
 }
-
-// AssumeNoStringOverflow is modeled as an assumption that the length of `s` is
-// less than 2^64.
-//
-// This is an invariant of the Go runtime so we do nothing here.
-func AssumeNoStringOverflow(s string) {}
 
 // Mutex is a wrapper around sync.Mutex.
 //
