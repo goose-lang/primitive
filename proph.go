@@ -1,6 +1,6 @@
 package primitive
 
-type ProphId struct {}
+type ProphId struct{}
 
 func NewProph() ProphId {
 	return ProphId{}
